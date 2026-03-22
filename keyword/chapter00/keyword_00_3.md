@@ -1,4 +1,11 @@
 호이스팅 (Hoisting) 🍠 -함수 선언문: 선언 전체가 끌어올려져서 선언 전에 호출 -함수 표현식/화살표 함수: const/let에 담으면 TDZ 때문에 선언 전 접근 시 ReferenceError임
+-console.log(a);
+var a = 'A';
+
+=> var a;
+console.log(a);
+a = 'A';
+이렇게 var로 두었을 때 concole에서 출력은 nondefined가 됨
 
 DOM 조작🍠 -태그 가져오기
 

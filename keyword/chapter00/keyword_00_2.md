@@ -1,6 +1,27 @@
 - border vs outline의 차이점 🍠
-  - `outline` : 요소 에 그려지는 테두리로 레이아웃과 요소 크기에 영향X
-  - `border` : 요소 안에 포함되는 테두리로 레이아웃과 요소 크기에 영향O
+- 블록 레벨 (block-level)
+  태그를 사용하여 요소를 삽입하였을 때, 요소가 페이지의 한 줄을 혼자 차지하는 요소이다. 즉, 너비가 100% 임을 의미하며, 다음 요소가 양 옆으로 붙을 공간이 존재하지 않으므로, 자연스레 줄이 넘어갑니다.
+  블록 레벨이 갖는 속성
+  - **style** 속성을 통해서 `margin, width, height` 속성을 부여할 시 모두 정의됩니다. 이러한 특성 덕분에, 블록 속성을 가진 태그로 화면을 구성하거나 레이아웃을 구성할 수 있습니다.
+- 인라인 레벨 (inline-level)
+
+  줄을 차지하지 않는 요소입니다. 브라우저 같은 화면에 표시되는 컨텐츠 만큼 영역을 차지하고 나머지 공간에는 다른 요소가 올 수 있습니다. 따라서 한 줄에 여러개의 인라인 레벨 요소를 표시하는 것이 가능합니다.
+
+  인라인 레벨이 갖는 속성
+  - 상, 하단 외부 여백 (margin-top, margin-bottom) 속성을 정의해도 적용되지 않습니다
+    ⇒ 상, 하단 여백은 line-height 속성에 의해 줄 간격을 조절합니다.
+  - 너비 (width) 와 높이 (height) 속성이 적용되지 않습니다.
+    ⇒ 인라인 요소의 너비 / 높이는 그 요소가 품고 있는 내용물(텍스트나 자식 요소)의 크기에 의해서만 부피가 결정됩니다.
+  - 인라인 속성을 가진 태그끼리 연속으로 사용되는 경우 최소한의 간격을 유지하기 위해 좌, 우에 약 5px 의 외부 여백이 적용됩니다
+  - 인라인 태그들은 한 줄에 나란히 배치됩니다
+
+- 인라인-블록 레벨 (inline-block-level)
+  인라인과 같이 한 줄에 표현하면서도 margin, width, height 속성 정의 시 모두 표현됩니다. 이 속성을 기본적으로 가지고 있는 태그가 없기 때문에 따로 inline-block 이라 선언을 해야합니다.
+  인라인과 다르게 inline-block 이 갖는 속성
+  - 상, 하단 외부 여백 속성 (margin-top, margin-bottom) 정의할 수 있습니다
+  - inline-block 요소의 상, 하 여백 (margin, line-height) 속성 설정 가능합니다
+  - 너비 (width) 와 높이 (height) 속성이 적용됩니다
+  - 인라인과 같이 5px 의 외부 여백이 자동으로 적용되나, margin-left, margin-right 으로 추가 여백을 지정할 수 있고, 여백을 제거하려면 parent 요소에 font-size: 0; 을 주거나, 태그를 빈칸 없이 사용하여 제거할 수 있습니다.
 
 ### transform 🍠
 
@@ -36,11 +57,11 @@
   - `transition-duration: 1s;` → 1초 동안 변화
 - transition-timing-function: 시작과 끝의 속도를 어떻게 할지 결정
   - `transition-timing-function: ease-in;`
-  | ease | 기본값, 부드럽게 시작하고 끝 |
-  | linear | 일정한 속도 |
-  | ease-in | 천천히 시작 |
-  | ease-out | 천천히 끝 |
-  | ease-in-out | 천천히 시작 + 천천히 끝 |
+    | ease | 기본값, 부드럽게 시작하고 끝 |
+    | linear | 일정한 속도 |
+    | ease-in | 천천히 시작 |
+    | ease-out | 천천히 끝 |
+    | ease-in-out | 천천히 시작 + 천천히 끝 |
 - transition-delay: 애니메이션 시작 전 기다리는 시간
   - `transition-delay: 시간;`
     - `transition-delay: 1s;` → 1초 후 시작
@@ -60,11 +81,11 @@
   - `animation-delay: 1s;`
 - animation-direction: 애니메이션 진행 방향 설정
   - `animation-direction: alternate;` → 왔다 갔다 반
-  | normal            | 기본, 정방향         |
-  | ----------------- | -------------------- |
-  | reverse           | 역방향               |
-  | alternate         | 정방향 → 역방향 반복 |
-  | alternate-reverse | 역방향 → 정방향 반복 |
+    | normal | 기본, 정방향 |
+    | ----------------- | -------------------- |
+    | reverse | 역방향 |
+    | alternate | 정방향 → 역방향 반복 |
+    | alternate-reverse | 역방향 → 정방향 반복 |
 - animation-iteration-count: 애니메이션 반복 횟수
   - `animation-iteration-count: 3;` → 3번 반복
   - `animation-iteration-count: infinite;` → 영원히 반복
@@ -73,24 +94,24 @@
   - `.box:hover{
   anomation-play-state: paused;
 }` → 마우스 올리면 정
-  | running | 실행     |
-  | ------- | -------- |
-  | paused  | 일시정지 |
+    | running | 실행 |
+    | ------- | -------- |
+    | paused | 일시정지 |
 - animation-timing-function: 애니메이션 속도 변화 방식
   - `animation-timing-function: linear;`
-  | ease        | 기본값         |
-  | ----------- | -------------- |
-  | linear      | 일정한 속도    |
-  | ease-in     | 천천히 시작    |
-  | ease-out    | 천천히 끝      |
-  | ease-in-out | 시작과 끝 느림 |
+    | ease | 기본값 |
+    | ----------- | -------------- |
+    | linear | 일정한 속도 |
+    | ease-in | 천천히 시작 |
+    | ease-out | 천천히 끝 |
+    | ease-in-out | 시작과 끝 느림 |
 - animation-fill-mode: 애니메이션 시작 전 / 종료 후 상태 유지 여부
   - `animation-fill-mode: forwards;` → 애니메이션 끝나도 마지막 상태 유지
-  | none      | 기본값              |
-  | --------- | ------------------- |
-  | forwards  | 마지막 상태 유지    |
-  | backwards | 시작 상태 적용      |
-  | both      | 시작 + 끝 상태 유지 |
+    | none | 기본값 |
+    | --------- | ------------------- |
+    | forwards | 마지막 상태 유지 |
+    | backwards | 시작 상태 적용 |
+    | both | 시작 + 끝 상태 유지 |
 - @keyframes: 애니메이션의 동작을 정의하는 규칙
   ```html
   @keyframes 이름 { from {스타일} to {스타일} } 또는 @keyframes move{ 0%
