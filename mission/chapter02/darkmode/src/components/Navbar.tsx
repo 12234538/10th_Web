@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from '../context/ThemeProvider';
 import ThemeToggleButton from './ThemeToggleButton';
 
 export default function Navbar() {
