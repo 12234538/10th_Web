@@ -2,8 +2,7 @@ import './App.css';
 import { useContext } from 'react';
 import { TodoContext } from './TodoContext';
 import TodoInput from './components/TodoInput';
-import TodoItem from './components/TodoItem';
-import DoneItem from './components/DoneItem';
+import TaskItem from './components/TaskItem';
 
 
 function App() {
@@ -23,7 +22,7 @@ function App() {
             <h2 className="render-container__title">계획</h2>
             <ul id="todo-list" className="render-container__list">
               {todos.map((task) => (
-                <TodoItem key={task.id} task={task} />
+                <TaskItem key={task.id} task={task} isDone={false} />
               ))}
             </ul>
           </div>
@@ -31,7 +30,7 @@ function App() {
             <h2 className="render-container__title">완료</h2>
             <ul id="done-list" className="render-container__list">
               {dones.map((task) => (
-                <DoneItem key={task.id} task={task}/>
+                <TaskItem key={task.id} task={task} isDone={true}/>
               ))}
             </ul>
           </div>

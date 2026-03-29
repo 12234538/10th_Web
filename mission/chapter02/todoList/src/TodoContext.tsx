@@ -1,9 +1,5 @@
 import { createContext, useState } from 'react';
-
-type Task = {
-  id: number;
-  text: string;
-};
+import type { Task } from './types';
 
 type TodoContextType = {
   input: string;
@@ -11,7 +7,7 @@ type TodoContextType = {
   dones: Task[];
   setInput: (value: string) => void;
   addTodo: (text: string) => void;
-  moveToDone: (task: Task) => void;
+  moveToDone: (id: number) => void;
   deleteDone: (id: number) => void;
 };
 
@@ -27,9 +23,10 @@ export function TodoProvider({ children }: { children: React.ReactNode }) {
     setTodos((prev) => [...prev, newTask]);
   }
 
-  function moveToDone(task: Task): void {
-    setTodos((prev) => prev.filter((t) => t.id !== task.id));
-    setDones((prev) => [...prev, task]);
+  function moveToDone(id: number): void {
+    const target = todos.find((t) => t.id === id)!;
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+    setDones((prev) => [...prev, target]);
   }
 
   function deleteDone(id: number): void {
