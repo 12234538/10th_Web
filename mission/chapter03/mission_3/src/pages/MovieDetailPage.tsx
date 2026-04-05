@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import type { Credits, MovieDetails } from '../types/movie';
 import { useEffect } from 'react';
-import axios from 'axios';
+import { getMovieDetails, getMovieCredits } from '../api/apis';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 
 const MovieDetailPage = () => {
@@ -19,25 +19,14 @@ const MovieDetailPage = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
+      if (!movieId) return;
       setIsPending(true);
 
       try {
-        const { data: detailData } = await axios.get<MovieDetails>(
-          `https://api.themoviedb.org/3/movie/${movieId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-            },
-          },
-        );
-        const { data: creditsData } = await axios.get<Credits>(
-          `https://api.themoviedb.org/3/movie/${movieId}/credits`,
-          {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-            },
-          },
-        );
+        const [detailData, creditsData] = await Promise.all([
+          getMovieDetails(movieId),
+          getMovieCredits(movieId),
+        ]);
 
         setDetails(detailData);
         setCredits(creditsData);

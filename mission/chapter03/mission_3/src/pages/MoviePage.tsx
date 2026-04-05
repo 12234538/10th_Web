@@ -4,6 +4,7 @@ import type { Movie, MovieResponse } from '../types/movie';
 import MovieCard from '../components/MovieCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useParams } from 'react-router-dom';
+import { getPopularMovies } from '../api/apis';
 
 export default function MoviePage() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -20,18 +21,15 @@ export default function MoviePage() {
   }>();
 
   useEffect(() => {
+    setPage(1);
+  }, [category]);
+
+  useEffect(() => {
     const fetchMovies = async () => {
       setIsPending(true); //데이터를 호출할 때는 로딩 중이므로
 
       try {
-        const { data } = await axios.get<MovieResponse>(
-          `https://api.themoviedb.org/3/movie/${category}?language=en-US&page=${page}`,
-          {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-            },
-          },
-        );
+        const data = await getPopularMovies();
         setMovies(data.results);
       } catch {
         setIsError(true);
