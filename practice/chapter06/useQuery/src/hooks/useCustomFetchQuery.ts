@@ -11,7 +11,7 @@ export const useCustomFetchQuery = <T>(url: string) => {
         throw new Error(`HTTP Status: ${response.status}`);
       }
 
-      return response.json() as Promise<T>;
+      return response.json() as unknown as Promise<T>;
     },
 
     retry: 3,
