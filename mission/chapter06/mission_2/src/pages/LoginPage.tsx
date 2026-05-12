@@ -32,9 +32,13 @@ const LoginPage = () => {
         password: data.password,
       });
 
-      const { name, accessToken, refreshToken } = response.data.data;
+      const { name, accessToken, refreshToken, id } = response.data.data;
 
-      login({ email: data.email, nickname: name }, accessToken, refreshToken);
+      login(
+        { id, email: data.email, nickname: name },
+        accessToken,
+        refreshToken,
+      );
 
       navigate(from, { replace: true }); // 원래 페이지로 이동
     } catch (error) {

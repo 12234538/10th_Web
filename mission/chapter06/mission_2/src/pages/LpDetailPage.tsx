@@ -157,7 +157,7 @@ const LpDetailPage = () => {
         >
           ❤️
         </button>
-        {user && (
+        {user?.id === lp.authorId && (
           <>
             <button
               onClick={() => navigate(`/lps/${lp.id}/edit`)}
@@ -241,7 +241,7 @@ const LpDetailPage = () => {
                     </span>
                   </div>
                   {/* 본인 댓글만 삭제 버튼 표시 */}
-                  {user && (
+                  {user?.id === comment.author?.id && (
                     <button
                       onClick={() => handleCommentDelete(comment.id)}
                       className="text-xs text-red-400 hover:text-red-600"
