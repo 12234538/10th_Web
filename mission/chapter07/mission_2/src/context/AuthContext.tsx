@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import axiosInstance from '../api/axios';
+
 interface User {
   id: number;
   email: string;
@@ -15,14 +16,32 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
+    try {
+      const stored = localStorage.getItem('user');
+
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.error('유저 정보 파싱 실패:', error);
+
+      localStorage.removeItem('user');
+
+      return null;
+    }
   });
 
-  const login = (userData: User, accessToken: string, refreshToken: string) => {
+  const login = (
+    userData: User,
+    accessToken: string,
+    refreshToken: string
+  ) => {
     setUser(userData);
+
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
@@ -35,24 +54,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('로그아웃 실패:', error);
     } finally {
       setUser(null);
+
       localStorage.removeItem('user');
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
     }
   };
 
-   // 닉네임만 즉시 업데이트
+  // 닉네임만 즉시 업데이트
   const updateNickname = (nickname: string) => {
     setUser((prev) => {
       if (!prev) return prev;
-      const updated = { ...prev, nickname };
+
+      const updated = {
+        ...prev,
+        nickname,
+      };
+
       localStorage.setItem('user', JSON.stringify(updated));
+
       return updated;
     });
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateNickname }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        updateNickname,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -60,6 +93,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('AuthProvider 밖에서 사용 불가!');
+
+  if (!context) {
+    throw new Error('AuthProvider 밖에서 사용 불가!');
+  }
+
   return context;
 };

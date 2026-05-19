@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../context/AuthContext';
-import { updateMyProfile, deleteMyAccount } from '../api/user';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import { useMyPage } from '../hooks/useMyPage';
 
 const MyPage = () => {
   const navigate = useNavigate();
-  const { user, logout, updateNickname } = useAuth();
-  const queryClient = useQueryClient();
+  const {
+  user,
+  isUpdating,
+  isDeleting,
+  updateProfileMutate,
+  deleteAccountMutate,
+  logoutMutate,
+} = useMyPage();
 
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -16,65 +20,22 @@ const MyPage = () => {
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
 
-  const { mutate: updateProfileMutate, isPending: isUpdating } = useMutation({
-    mutationFn: (profileData: { name: string; bio: string; avatar: string }) =>
-      updateMyProfile(profileData),
-
-    onMutate: async (profileData) => {
-      const previousNickname = user?.nickname;
-
-      updateNickname(profileData.name);
-
-      return { previousNickname };
-    },
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myProfile'] });
-      setIsEditing(false);
-      alert('프로필이 수정되었습니다.');
-    },
-
-    onError: (_error, _variables, context) => {
-      if (context?.previousNickname) {
-        updateNickname(context.previousNickname);
-      }
-
-      alert('프로필 수정에 실패했습니다.');
-    },
-  });
-
-  const { mutate: deleteAccountMutate, isPending: isDeleting } = useMutation({
-    mutationFn: deleteMyAccount,
-    onSuccess: () => {
-      logout();
-      navigate('/login');
-    },
-    onError: () => {
-      alert('회원 탈퇴에 실패했습니다.');
-    },
-  });
-
-  const { mutate: logoutMutate } = useMutation({
-    mutationFn: async () => {
-      await logout();
-    },
-    onSuccess: () => {
-      navigate('/');
-    },
-  });
+  
 
   const handleProfileSubmit = () => {
-    if (!name.trim()) {
-      alert('닉네임을 입력해주세요.');
-      return;
-    }
+  if (!name.trim()) {
+    alert('닉네임을 입력해주세요.');
+    return;
+  }
 
-    updateProfileMutate({
-      name,
-      bio,
-      avatar,
-    });
-  };
+  updateProfileMutate({
+    name,
+    bio,
+    avatar,
+  });
+
+  setIsEditing(false);
+};
 
   return (
     <div className="flex flex-col h-full">
