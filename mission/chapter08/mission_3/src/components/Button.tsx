@@ -1,39 +1,31 @@
-interface ButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'google'; // 버튼 종류
-  type?: 'button' | 'submit';
-  className?: string;
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  variant?: 'primary' | 'secondary' | 'google';
 }
 
 const Button = ({
   children,
-  onClick,
-  disabled = false,
   variant = 'primary',
-  type = 'button',
   className = '',
+  disabled,
+  ...rest
 }: ButtonProps) => {
-  // variant에 따라 스타일 다르게
   const variantStyles = {
-    // 파란 버튼 (로그인, 다음, 회원가입 등)
     primary:
-      'w-full bg-blue-300 text-white py-3 rounded-md text-lg font-medium hover:bg-blue-500 transition-colors cursor-pointer disabled:bg-gray-300',
-    // 테두리 버튼 (로그아웃 등)
+      'w-full bg-blue-300 text-white py-3 rounded-md text-lg font-medium hover:bg-blue-500 transition-colors cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed',
     secondary:
-      'px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors cursor-pointer',
-    // 구글 버튼
+      'px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed',
     google:
-      'w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-md text-lg font-medium hover:bg-gray-100 transition-colors cursor-pointer',
+      'w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-md text-lg font-medium hover:bg-gray-100 transition-colors cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed',
   };
 
   return (
     <button
-      type={type}
-      onClick={onClick}
       disabled={disabled}
       className={`${variantStyles[variant]} ${className}`}
+      {...rest}
     >
       {children}
     </button>
